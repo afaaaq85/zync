@@ -1,13 +1,15 @@
-"use strict";
 const fs = require("fs");
 const path = require("path");
 const Groq = require("groq-sdk");
 const express = require("express");
-const app = express();
-const port = process.env.PORT;
-require("dotenv").config();
-app.use(express.json());
+const mongoose = require("mongoose");
 const cors = require("cors");
+const User = require("./schema/UserSchema");
+require("dotenv").config();
+
+const app = express();
+
+app.use(express.json());
 app.use(
   cors({
     origin: "*",
@@ -18,44 +20,50 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-const historyFilePath = path.join(__dirname, "conversationHistory.json");
-
-function loadConversationHistory() {
-  if (fs.existsSync(historyFilePath)) {
-    const data = fs.readFileSync(historyFilePath, "utf8");
-    return JSON.parse(data);
-  }
-  return [];
-}
-
-function saveConversationHistory(history) {
-  fs.writeFileSync(historyFilePath, JSON.stringify(history, null, 2), "utf8");
-}
-
-async function getResponse(userMessage, model) {
-  const conversationHistory = loadConversationHistory();
-  conversationHistory.push({
-    role: "user",
-    content: userMessage,
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
   });
 
-  const chatCompletion = await getChatFromModel(conversationHistory, model);
-  const assistantResponse = {
-    role: "assistant",
-    content: chatCompletion.choices[0]?.message?.content || "",
-  };
-  conversationHistory.push(assistantResponse);
-  saveConversationHistory(conversationHistory);
+async function getResponse(userMessage, model, chatHistory) {
+  try {
+    const messages = chatHistory
+      .map((message) => ({ role: message.role, content: message.content }))
+      .concat({ role: "user", content: userMessage });
 
-  return assistantResponse.content;
+    // Debugging: Log messages to verify the structure
+    console.log("Message being sent to Groq API:", messages);
+
+    const chatCompletion = await getGroqResponse(messages, model);
+    const assistantResponse = {
+      role: "assistant",
+      content: chatCompletion.choices[0]?.message?.content || "",
+    };
+
+    return assistantResponse.content;
+  } catch (error) {
+    console.error("Error getting response:", error);
+    throw error;
+  }
 }
 
-async function getChatFromModel(messages, model) {
+async function getGroqResponse(messages, model) {
+  for (const message of messages) {
+    if (!message.role || !message.content) {
+      throw new Error(`Invalid message structure: ${JSON.stringify(message)}`);
+    }
+  }
+
   return groq.chat.completions.create({
     messages: [
       {
         role: "system",
-        content: `You are a helpful AI Assistant. Always reply using html tags.`,
+        content:
+          "you are a helpful AI assistant. always return the response using html tags except for h1 tags.",
       },
       ...messages,
     ],
@@ -64,35 +72,50 @@ async function getChatFromModel(messages, model) {
 }
 
 app.post("/api/chat", async (req, res) => {
-  const { message, model } = req.body;
-  if (!message) {
-    return res.status(400).send({ error: "Message is required" });
+  const { message, model, username } = req.body;
+  if (!message || !username) {
+    return res.status(400).send({ error: "Message and Username are required" });
   }
   try {
-    const response = await getResponse(message, model);
-    res.send({ response });
-    console.log(response);
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+    const assistantResponse = await getResponse(message, model, user.chatHistory);
+    user.chatHistory.push(
+      { role: "user", content: message },
+      { role: "assistant", content: assistantResponse }
+    );
+    await user.save();
+
+    res.send({ response: assistantResponse });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: "Internal Server Error" });
   }
 });
 
-app.post("/api/clear", (req, res) => {
+app.patch("/api/clear", async (req, res) => {
+  const { username } = req.body;
+  if (!username) {
+    return res.status(400).send({ error: "Username is required" });
+  }
   try {
-    saveConversationHistory([]);
-    res.send({ message: "Conversation history cleared." });
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+    let emptyChatHistory = [];
+    user.chatHistory = emptyChatHistory;
+    await user.save();
+
+    res.send({ response: "Chat history cleared" });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: "Internal Server Error" });
+    res.status(500).send({ error });
   }
-});
-app.get("/", (req, res) => {
-  return res.send("Server is running...");
 });
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server is running...`);
+  console.log(`Server is running on http://localhost:${process.env.PORT}`);
 });
-
-module.exports = app;

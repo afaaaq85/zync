@@ -124,11 +124,13 @@
 .chat-body{
   display: flex;
   flex-direction: column;
+  margin-top: 100px;
 }
 
 .chat-bottom{
   position: absolute;
-  bottom: 0;
+  bottom: 10px;
+  width: 100%;
 }
 
 .chat-button {
