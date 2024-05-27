@@ -3,6 +3,7 @@ import Chat from "./components/Chat";
 import Navbar from "./components/Navbar";
 
 function App() {
+  
   const [isOpen, setIsOpen] = useState(true);
 
   const toggleSidebar = () => {

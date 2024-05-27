@@ -13,10 +13,12 @@ function Chat({ isOpen }) {
   const [model, setModel] = useState("llama3-8b-8192");
   const [loading, setLoading] = useState(false);
 
+  const backendURL = import.meta.env.VITE_API_URL; 
+  
   const handleSendMessage = async () => {
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:4000/api/chat", {
+      const response = await axios.post(`${backendURL}/api/chat`, {
         message: userMessage,
         model: model,
       });
