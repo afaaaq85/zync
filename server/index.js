@@ -96,6 +96,5 @@ app.listen(process.env.PORT, () => {
 });
 
 module.exports = {
-  getResponse,
-  getChatFromModel,
+  app,
 };
