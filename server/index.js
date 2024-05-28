@@ -116,6 +116,10 @@ app.patch("/api/clear", async (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("zync's server is up and running!");
+})
+
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on http://localhost:${process.env.PORT}`);
 });
