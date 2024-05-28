@@ -3,9 +3,11 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import Lottie from "lottie-react";
-import TypingAnimation from "../assets/anim/typing.json";
-import DOMPurify from "dompurify";
+import zyncWhite from "../assets/imgs/zync-white.png";
+import zyncDarkGray from "../assets/imgs/zync-darkgray.png";
+// import Lottie from "lottie-react";
+// import TypingAnimation from "../assets/anim/typing.json";
+// import DOMPurify from "dompurify";
 
 function Chat({ isOpen }) {
   const [messages, setMessages] = useState([]);
@@ -16,6 +18,8 @@ function Chat({ isOpen }) {
   const backendURL = import.meta.env.VITE_API_URL;
 
   const handleSendMessage = async () => {
+    setUserMessage("");
+    setMessages((prevMessages) => [...prevMessages, { role: "user", content: userMessage }]);
     setLoading(true);
     try {
       const response = await axios.post(`${backendURL}/api/chat`, {
@@ -26,22 +30,20 @@ function Chat({ isOpen }) {
 
       setMessages((prevMessages) => [
         ...prevMessages,
-        { role: "user", content: userMessage },
         { role: "assistant", content: response.data.response },
       ]);
 
-      setUserMessage("");
       console.log(response.data.response);
       setLoading(false);
     } catch (error) {
       console.error("Error sending message:", error);
-      setUserMessage("");
       setLoading(false);
     }
   };
 
   const handleClearChat = async () => {
     setUserMessage("");
+
     try {
       const response = await axios.patch(`${backendURL}/api/clear`, {
         username: "dummyUser",
@@ -50,7 +52,6 @@ function Chat({ isOpen }) {
       console.log(response.data.response);
     } catch (error) {
       console.error("Error sending message:", error);
-      setUserMessage("");
       setMessages([]);
       setLoading(false);
     }
@@ -59,31 +60,39 @@ function Chat({ isOpen }) {
   return (
     <>
       <div className={`chat-container ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
-        <div className="chat-body col-sm-10 col-10 d-flex flex-column align-items-center">
-          <div className="chat-messages m-2 col-12">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`message-item ${
-                  message.role === "user" ? `user-message` : "assistant-message"
-                }`}
-              >
-                <div className="d-flex">
-                  <p className="m-0 p-0">
-                    <b>{message.role}:&nbsp;</b>{" "}
-                  </p>
-                  <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message.content) }} />
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="welcome-header d-flex align-items-center mt-4">
+          <h2 className="p-0 m-0"> playground</h2>
         </div>
-        <div
-          className={`chat-bottom ${
-            isOpen ? "col-6" : "col-10"
-          } d-flex flex-md-row flex-column-reverse gap-2 align-items-center justify-content-center`}
-        >
-          <div className="col-md-6 col-12 chat-msg-input">
+
+        {messages.length === 0 ? (
+          <div className="welcome-tagline">
+            <img src={zyncWhite} alt="logo" className="brand-logo" />
+            <p className="m-0 p-0 mt-1">Welcome to zync's playground</p>
+          </div>
+        ) : (
+          <div className="chat-body col-sm-6 col-10 d-flex flex-column align-items-center ">
+            <div className="chat-messages m-2 col-12">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`message-item ${
+                    message.role === "user" ? "user-message" : "assistant-message"
+                  }`}
+                >
+                  <div className="d-flex">
+                    <p className="m-0 p-0">
+                      <b>{message.role === "user" ? "You" : "Assistant"}:&nbsp;</b>
+                    </p>
+                    <div dangerouslySetInnerHTML={{ __html: message.content }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className={`chat-bottom d-flex flex-lg-row flex-column-reverse col-sm-8 col-xl-7 col-10 gap-1`}>
+          <div className="col-lg-6 col-12 mb-2 mb-md-0">
             <TextField
               id="outlined-basic"
               fullWidth
@@ -91,15 +100,12 @@ function Chat({ isOpen }) {
               variant="outlined"
               value={userMessage}
               InputProps={{ sx: { borderRadius: "8px" } }}
-              onChange={(e) => {
-                setUserMessage(e.target.value);
-              }}
+              onChange={(e) => setUserMessage(e.target.value)}
               size="small"
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             />
           </div>
-
-          <div className="chat-controls d-flex col-md-6 col-12 justify-content-center gap-2">
+          <div className="d-flex col-lg-6 col-12 justify-content-lg-end justify-content-center gap-2">
             <Select
               labelId="demo-select-small-label"
               id="demo-select-small"

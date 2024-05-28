@@ -1,16 +1,22 @@
-import zyngDarkGray from '../assets/imgs/zync-blue.png';
+import zyncDarkGray from "../assets/imgs/zync-darkgray.png";
 
 const Navbar = ({ isOpen, toggleSidebar }) => {
   return (
     <>
       <div className="brand-top">
         <i className="bi bi-window-sidebar toggle-button fs-4" onClick={toggleSidebar}></i>
-        <img src={zyngDarkGray} alt="zync-logo" className={`brand-logo ${isOpen ? "d-none":""}`}/>
-        <h2 className={`brand-title ${isOpen ? "d-none":""}`}>zync</h2>
+        <h2 className={`brand-title ${isOpen ? "d-none" : " ms-3"}`}>zync</h2>
       </div>
       <div className="nav-container">
         <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
-          <h2>zync</h2>
+          <div className="sidebar-logo d-flex align-items-center gap-2 ">
+            <img
+              src={zyncDarkGray}
+              alt="zync-logo"
+              className={`brand-logo `}
+            />
+            <h2 className="p-0 m-0 mb-1">zync</h2>
+          </div>
           <ul className="nav-items">
             <li>
               <a href="#">Home</a>
