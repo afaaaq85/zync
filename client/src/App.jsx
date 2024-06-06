@@ -12,7 +12,7 @@ function App() {
 
   return (
     <>
-      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} />
+      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsOpen}/>
       <Chat isOpen={isOpen} />
     </>
   );

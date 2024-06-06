@@ -1,6 +1,14 @@
+import { useEffect } from "react";
 import zyncDarkGray from "../assets/imgs/zync-darkgray.png";
 
-const Navbar = ({ isOpen, toggleSidebar }) => {
+const Navbar = ({ isOpen, toggleSidebar,setIsOpen }) => {
+  useEffect(() => {
+    document.addEventListener("click", (e) => {
+      if(e.clientX > 250) {
+        setIsOpen(false)
+      }
+    })
+  },[setIsOpen])
   return (
     <>
       <div className="brand-top">
