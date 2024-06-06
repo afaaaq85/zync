@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect,useRef } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -14,6 +14,7 @@ function Chat({ isOpen }) {
   const [loading, setLoading] = useState(false);
   const [temperatureValue, setTemperatureValue] = useState(0.5);
   const backendURL = import.meta.env.VITE_API_URL;
+  const chatEndRef = useRef(null);
 
   const handleSendMessage = async () => {
     setUserMessage("");
@@ -56,6 +57,10 @@ function Chat({ isOpen }) {
     }
   };
 
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
   return (
     <>
       <div className={`chat-container ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
@@ -82,11 +87,13 @@ function Chat({ isOpen }) {
                     <p className="m-0 p-0">
                       <b>{message.role === "user" ? "You" : "Assistant"}:&nbsp;&nbsp;</b>
                     </p>
+                <div ref={chatEndRef} />
                     
                     <div dangerouslySetInnerHTML={{ __html: message.content }} />
                   </div>
                 </div>
               ))}
+
               {loading && (
                 <div className="message-item assistant-message">
                   <div className="d-flex">
