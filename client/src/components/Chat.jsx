@@ -1,22 +1,18 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import zyncWhite from "../assets/imgs/zync-white.png";
-// import zyncDarkGray from "../assets/imgs/zync-darkgray.png";
-// import Lottie from "lottie-react";
-// import TypingAnimation from "../assets/anim/typing.json";
-// import DOMPurify from "dompurify";
+import Lottie from "lottie-react";
+import typingAnimation from "../assets/anim/typing-anim.json";
+import axios from "axios";
 
 function Chat({ isOpen }) {
   const [messages, setMessages] = useState([]);
   const [userMessage, setUserMessage] = useState("");
   const [model, setModel] = useState("llama3-8b-8192");
-  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
   const [temperatureValue, setTemperatureValue] = useState(0.5);
-
   const backendURL = import.meta.env.VITE_API_URL;
 
   const handleSendMessage = async () => {
@@ -28,7 +24,7 @@ function Chat({ isOpen }) {
         message: userMessage,
         model: model,
         username: "dummyUser",
-        temperatureValue: temperatureValue
+        temperatureValue: temperatureValue,
       });
 
       setMessages((prevMessages) => [
@@ -59,10 +55,7 @@ function Chat({ isOpen }) {
       setLoading(false);
     }
   };
-useEffect(() => {
-  console.log(temperatureValue);
-  console.log(typeof temperatureValue);
-}, [temperatureValue]);
+
   return (
     <>
       <div className={`chat-container ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
@@ -76,30 +69,39 @@ useEffect(() => {
             <p className="m-0 p-0 mt-1">Welcome to zync&apos;s playground</p>
           </div>
         ) : (
-          <div className="chat-body col-sm-6 col-10 d-flex flex-column align-items-center ">
+          <div className="chat-body col-sm-6 col-10 d-flex flex-column align-items-center">
             <div className="chat-messages m-2 col-12">
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`message-item ${
+                  className={`message-item my-1 ${
                     message.role === "user" ? "user-message" : "assistant-message"
                   }`}
                 >
                   <div className="d-flex">
                     <p className="m-0 p-0">
-                      <b>{message.role === "user" ? "You" : "Assistant"}:&nbsp;</b>
+                      <b>{message.role === "user" ? "You" : "Assistant"}:&nbsp;&nbsp;</b>
                     </p>
+                    
                     <div dangerouslySetInnerHTML={{ __html: message.content }} />
                   </div>
                 </div>
               ))}
+              {loading && (
+                <div className="message-item assistant-message">
+                  <div className="d-flex">
+                    <p className="m-0 p-0">
+                      <b>Assistant:&nbsp;</b>
+                    </p>
+                    <Lottie animationData={typingAnimation} className="typing-animation" />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        <div
-          className={`chat-bottom d-flex flex-column col-sm-8 col-xl-7 col-10 gap-2`}
-        >
+        <div className={`chat-bottom d-flex flex-column col-sm-8 col-xl-7 col-10 gap-2`}>
           <div className="model-controls d-flex align-items-center gap-3 justify-content-center">
             <Select
               labelId="demo-select-small-label"

@@ -182,7 +182,7 @@
 .chat-messages {
   height: 70vh;
   overflow-y: scroll;
-  border: 1px solid rgb(224, 224, 224);
+  /* border: 1px solid rgb(224, 224, 224); */
   padding: 20px 40px;
   border-radius: 10px;
 }
@@ -244,6 +244,10 @@
     display: flex;
     flex-direction: column;
     width: 150px;
-    background-color: red;
   }
+}
+
+.typing-animation{
+  height: 20px;
+  margin-left: 5px;
 }
