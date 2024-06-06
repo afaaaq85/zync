@@ -29,16 +29,15 @@ mongoose
     console.error("MongoDB connection error:", error);
   });
 
-async function getResponse(userMessage, model, chatHistory) {
+async function getResponse(userMessage, model, chatHistory,temperatureValue) {
   try {
     const messages = chatHistory
       .map((message) => ({ role: message.role, content: message.content }))
       .concat({ role: "user", content: userMessage });
 
     // Debugging: Log messages to verify the structure
-    console.log("Message being sent to Groq API:", messages);
-
-    const chatCompletion = await getGroqResponse(messages, model);
+    console.log("Message being sent to Groq API:",temperatureValue, messages);
+    const chatCompletion = await getGroqResponse(messages, model,temperatureValue);
     const assistantResponse = {
       role: "assistant",
       content: chatCompletion.choices[0]?.message?.content || "",
@@ -51,7 +50,7 @@ async function getResponse(userMessage, model, chatHistory) {
   }
 }
 
-async function getGroqResponse(messages, model) {
+async function getGroqResponse(messages, model,temperatureValue) {
   for (const message of messages) {
     if (!message.role || !message.content) {
       throw new Error(`Invalid message structure: ${JSON.stringify(message)}`);
@@ -63,16 +62,18 @@ async function getGroqResponse(messages, model) {
       {
         role: "system",
         content:
-          "you are a helpful AI assistant. always return the response using html tags except for h1 tags.",
+          "you are a helpful AI assistant. Always answer using html tags."
       },
       ...messages,
     ],
     model: model || "llama3-8b-8192",
+    temperature: temperatureValue,
   });
 }
 
 app.post("/api/chat", async (req, res) => {
-  const { message, model, username } = req.body;
+  const { message, model, username,temperatureValue } = req.body;
+  console.log("req body:", req.body);
   if (!message || !username) {
     return res.status(400).send({ error: "Message and Username are required" });
   }
@@ -81,7 +82,7 @@ app.post("/api/chat", async (req, res) => {
     if (!user) {
       return res.status(404).send({ error: "User not found" });
     }
-    const assistantResponse = await getResponse(message, model, user.chatHistory);
+    const assistantResponse = await getResponse(message, model, user.chatHistory,parseFloat(temperatureValue));
     user.chatHistory.push(
       { role: "user", content: message },
       { role: "assistant", content: assistantResponse }
