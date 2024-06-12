@@ -38,6 +38,9 @@ const Navbar = ({ isOpen, toggleSidebar,setIsOpen }) => {
             <li>
               <a href="#">Contact</a>
             </li>
+            <li>
+              <a href="#">Logout</a>
+            </li>
           </ul>
         </div>
       </div>

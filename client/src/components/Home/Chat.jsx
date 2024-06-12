@@ -151,8 +151,8 @@ function Chat({ isOpen }) {
             </div>
           </div>
 
-          <div className="chat-input-container d-flex align-items-center flex-column flex-lg-row gap-lg-0 gap-2 gap3">
-            <div className="col-lg-7  col-12 my-md-0 my-2 mb-md-0">
+          <div className="chat-input-container d-flex align-items-center flex-column flex-lg-row gap-lg-1 gap-2 gap3">
+            <div className="col-lg-7 col-12 flex-grow-1 my-md-0 my-2 mb-md-0">
               <TextField
                 id="outlined-basic"
                 fullWidth
@@ -165,7 +165,7 @@ function Chat({ isOpen }) {
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
               />
             </div>
-            <div className="d-flex col-lg-5 col-12 justify-content-lg-center justify-content-center gap-2">
+            <div className="d-flex col-lg-3 col-12 justify-content-lg-start justify-content-center gap-2">
               <button
                 className="chat-button"
                 onClick={handleSendMessage}
