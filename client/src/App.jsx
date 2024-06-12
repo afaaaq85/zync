@@ -1,20 +1,11 @@
-import  { useState } from 'react';
-import Chat from "./components/Chat";
-import Navbar from "./components/Navbar";
+import { AuthProvider } from "./Context";
+import MainStack from "./components/MainStack/MainStack";
 
 function App() {
-  
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
-    <>
-      <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsOpen}/>
-      <Chat isOpen={isOpen} />
-    </>
+    <AuthProvider>
+      <MainStack />
+    </AuthProvider>
   );
 }
 
