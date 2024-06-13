@@ -12,11 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const { userToken, setUserToken } = useAuth();
-  useEffect(() => {
-    if (userToken != null) {
-      navigate("/home");
-    }
-  }, []);
+
 
   const handleChangeForm = (e) => {
     setLoginData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
