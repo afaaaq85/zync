@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import zyncBlue from "../../assets/imgs/zync-blue.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ const Login = () => {
   const backendURL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
-  const { userToken, setUserToken } = useAuth();
+  const { setUserToken } = useAuth();
 
 
   const handleChangeForm = (e) => {
