@@ -17,11 +17,13 @@ function Chat({ isOpen }) {
   const backendURL = import.meta.env.VITE_API_URL;
   const chatEndRef = useRef(null);
   const { userToken } = useAuth();
-  
 
-  const handleSendMessage = async () => {  
+  const handleSendMessage = async () => {
     setUserMessage("");
-    setMessages((prevMessages) => [...prevMessages, { role: "user", content: userMessage }]);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", content: userMessage },
+    ]);
     setLoading(true);
     try {
       const response = await axios.post(
@@ -56,11 +58,15 @@ function Chat({ isOpen }) {
     setUserMessage("");
 
     try {
-      const response = await axios.patch(`${backendURL}/api/clear`, {},{
-        headers:{
-          Authorization: `Bearer ${userToken}`
+      const response = await axios.patch(
+        `${backendURL}/api/clear`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
         }
-      });
+      );
       setMessages([]);
       console.log(response.data.response);
     } catch (error) {
@@ -76,7 +82,11 @@ function Chat({ isOpen }) {
 
   return (
     <>
-      <div className={`chat-container ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
+      <div
+        className={`chat-container ${
+          isOpen ? "sidebar-open" : "sidebar-closed"
+        }`}
+      >
         <div className="welcome-header d-flex align-items-center mt-4">
           <h2 className="p-0 m-0"> playground</h2>
         </div>
@@ -93,16 +103,23 @@ function Chat({ isOpen }) {
                 <div
                   key={index}
                   className={`message-item my-1 ${
-                    message.role === "user" ? "user-message" : "assistant-message"
+                    message.role === "user"
+                      ? "user-message"
+                      : "assistant-message"
                   }`}
                 >
                   <div className="d-flex">
                     <p className="m-0 p-0">
-                      <b>{message.role === "user" ? "You" : "Assistant"}:&nbsp;&nbsp;</b>
+                      <b>
+                        {message.role === "user" ? "You" : "Assistant"}
+                        :&nbsp;&nbsp;
+                      </b>
                     </p>
                     <div ref={chatEndRef} />
 
-                    <div dangerouslySetInnerHTML={{ __html: message.content }} />
+                    <pre className="" aria-multiline>
+                      {message.content}
+                    </pre>
                   </div>
                 </div>
               ))}
@@ -113,7 +130,10 @@ function Chat({ isOpen }) {
                     <p className="m-0 p-0">
                       <b>Assistant:&nbsp;</b>
                     </p>
-                    <Lottie animationData={typingAnimation} className="typing-animation" />
+                    <Lottie
+                      animationData={typingAnimation}
+                      className="typing-animation"
+                    />
                   </div>
                 </div>
               )}
@@ -121,7 +141,9 @@ function Chat({ isOpen }) {
           </div>
         )}
 
-        <div className={`chat-bottom d-flex flex-column col-sm-8 col-xl-7 col-10 gap-2`}>
+        <div
+          className={`chat-bottom d-flex flex-column col-sm-8 col-xl-7 col-10 gap-2`}
+        >
           <div className="model-controls d-flex align-items-center gap-3 justify-content-center">
             <Select
               labelId="demo-select-small-label"
@@ -134,7 +156,9 @@ function Chat({ isOpen }) {
               <MenuItem value={"llama3-8b-8192"}>llama3-8b-8192</MenuItem>
               <MenuItem value={"llama3-70b-8192"}>llama3-70b-8192</MenuItem>
               <MenuItem value={"gemma-7b-it"}>gemma-7b-it</MenuItem>
-              <MenuItem value={"mixtral-8x7b-32768"}>mixtral-8x7b-32768</MenuItem>
+              <MenuItem value={"mixtral-8x7b-32768"}>
+                mixtral-8x7b-32768
+              </MenuItem>
             </Select>
             <div className="temp-slider d-flex align-items-center gap-2">
               <p className="m-0 p-0">Temperature</p>

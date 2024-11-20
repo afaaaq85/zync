@@ -15,6 +15,7 @@ const MainStack = () => {
       <Navbar isOpen={isOpen} toggleSidebar={toggleSidebar} setIsOpen={setIsOpen} />
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Chat />} />
         <Route path="*" element={<div className="mt-5 text-center ">Page not found</div>} />
@@ -22,5 +23,4 @@ const MainStack = () => {
     </Router>
   );
 };
-
 export default MainStack;

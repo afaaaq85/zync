@@ -396,3 +396,9 @@
   color: red;
   font-size: 12px;
 }
+
+
+pre {
+  white-space: pre-wrap;   /* Allows wrapping */
+  word-wrap: break-word;   /* Breaks long words if necessary */
+}
