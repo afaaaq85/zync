@@ -18,7 +18,6 @@ const Signup = () => {
     password: "",
   });
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("show toast:", showToast);
