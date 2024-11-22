@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import zyncBlue from "../../assets/imgs/zync-blue.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Toast from "../Toast/Toast";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -19,6 +18,7 @@ const Signup = () => {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("show toast:", showToast);
@@ -59,31 +59,28 @@ const Signup = () => {
     return true;
   };
 
-  const handleRegisterUser = async () => {
+  const handleRegisterUser = async() => {
     const validationResult = validateFields();
     if (!validationResult) {
       console.log("error in fields");
     } else {
       try {
-        const response = await axios.post(`${backendURL}/user/signup`, {
-          first_name: signupData.fname,
-          last_name: signupData.lname,
-          username: signupData.username,
-          email: signupData.email,
-          password: signupData.password,
-        });
-        console.log("response:", response.data);
-        if (response.status === 200) {
-          setToastMessage("User created successfully");
-          setShowToast(true);
-          setTimeout(() => {
-            navigate("/");
-          }, 3000);
-        }
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/user/signup`,
+          {
+            first_name: signupData.fname,
+            last_name: signupData.lname,
+            username: signupData.username,
+            email: signupData.email,
+            password:signupData.password
+          }
+        );
+        console.log("response:", response);
+        alert("User registered successfully!");
+        navigate("/login");
       } catch (error) {
-        console.log("error:", error);
-        setToastMessage("Some error occurred while creating user :(");
-        setShowToast(true);
+        alert(error.response.data.error);
+        console.error("error:", error.response);
       }
     }
   };
@@ -110,7 +107,9 @@ const Signup = () => {
                 value={signupData.fname}
                 onChange={(e) => handleChangeForm(e)}
               />
-              {errors.fname && <span className="error-text">{errors.fname}</span>}
+              {errors.fname && (
+                <span className="error-text">{errors.fname}</span>
+              )}
             </div>
             <div className="d-flex flex-column col-sm-5 col-12 flex-grow-1">
               <label htmlFor="lname">Last name</label>
@@ -132,7 +131,9 @@ const Signup = () => {
               value={signupData.username}
               onChange={(e) => handleChangeForm(e)}
             />
-            {errors.username && <span className="error-text">{errors.username}</span>}
+            {errors.username && (
+              <span className="error-text">{errors.username}</span>
+            )}
           </div>
           <div className="d-flex flex-column col-12 mt-2">
             <label htmlFor="email">Email</label>
@@ -145,7 +146,9 @@ const Signup = () => {
             />
             {errors.email && <span className="error-text">{errors.email}</span>}
             {!errors.email && (
-              <p className="text-recommend m-0">We recommend using work email address.</p>
+              <p className="text-recommend m-0">
+                We recommend using work email address.
+              </p>
             )}
           </div>
           <div className="d-flex flex-column col-12 mt-2">
@@ -165,21 +168,37 @@ const Signup = () => {
                   onClick={() => setTogglePassword(!togglePassword)}
                 ></i>
               ) : (
-                <i className="bi bi-eye" onClick={() => setTogglePassword(!togglePassword)}></i>
+                <i
+                  className="bi bi-eye"
+                  onClick={() => setTogglePassword(!togglePassword)}
+                ></i>
               )}
             </div>
-            {errors.password && <span className="error-text">{errors.password}</span>}
+            {errors.password && (
+              <span className="error-text">{errors.password}</span>
+            )}
             {!errors.password && (
-              <p className="text-recommend m-0">Minimum length is 8 characters.</p>
+              <p className="text-recommend m-0">
+                Minimum length is 8 characters.
+              </p>
             )}
           </div>
 
-          <button className="login-button my-1 mt-3" type="submit" onClick={handleRegisterUser}>
+          <button
+            className="login-button my-1 mt-3"
+            type="submit"
+            onClick={handleRegisterUser}
+          >
             Register
           </button>
           <p className="terms-text">
-            By clicking Register or registering through a third party you accept the Zync&apos;s
-            <a> Terms of Use and acknowledge the Privacy Statement and Cookie Policy.</a>{" "}
+            By clicking Register or registering through a third party you accept
+            the Zync's
+            <a>
+              {" "}
+              Terms of Use and acknowledge the Privacy Statement and Cookie
+              Policy.
+            </a>{" "}
           </p>
           <p className="terms-text text-center">Register with:</p>
           <div className="login-btns d-flex flex-column gap-2 mt-2">
@@ -197,7 +216,7 @@ const Signup = () => {
             </button>
           </div>
           <p className="terms-text text-center mt-2">
-            Already have an account?<a> Sign in</a>
+            Already have an account?<a onClick={() => navigate("/")}> Sign in</a>
           </p>
         </div>
       </div>

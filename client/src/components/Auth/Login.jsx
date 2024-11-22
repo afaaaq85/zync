@@ -23,7 +23,10 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${backendURL}/user/login`, loginData);
+      const response = await axios.post(`${backendURL}/user/login`, {
+        email: loginData.email,
+        password: loginData.password,
+      });
       console.log("response:", response.data.token);
       setUserToken(response.data.token);
       localStorage.setItem("userToken", response.data.token);
@@ -57,7 +60,7 @@ const Login = () => {
         {/* login form */}
         <div className="login-form d-flex flex-column col-12 px-2">
           <div className="d-flex flex-column col-12 mt-2">
-            <label htmlFor="email">Username or primary email</label>
+            <label htmlFor="email">Email</label>
             <input
               type="text"
               id="email"
@@ -101,8 +104,8 @@ const Login = () => {
             By signing in you accept the
             <a> Terms of Use and acknowledge the Privacy Statement and Cookie Policy.</a>{" "}
           </p>
-          <p className="terms-text text-center" onClick={() => navigate("/signup")}>
-            Don't have an account yet? <a>Register now</a>
+          <p className="terms-text text-center">
+            Don't have an account yet? <a onClick={() => navigate("/signup")}>Register now</a>
           </p>
           <div className="text-between-lines">
             <hr className="line" />
