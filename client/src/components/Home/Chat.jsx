@@ -77,7 +77,7 @@ function Chat({ isOpen }) {
   return (
     <>
       <div className={`chat-container ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
-        <div className="welcome-header d-flex align-items-center mt-4">
+        <div className="welcome-header  d-flex align-items-center mt-4">
           <h2 className="p-0 m-0"> playground</h2>
         </div>
 

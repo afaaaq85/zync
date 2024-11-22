@@ -1,10 +1,17 @@
-/* eslint-disable react/no-unescaped-entities */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import zyncBlue from "../../assets/imgs/zync-blue.png";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Toast from "../Toast/Toast";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [togglePassword, setTogglePassword] = useState(false);
-  const [signupData, setLoginData] = useState({
+  const backendURL = import.meta.env.VITE_API_URL;
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+
+  const [signupData, setSignupData] = useState({
     fname: "",
     lname: "",
     username: "",
@@ -13,8 +20,17 @@ const Signup = () => {
   });
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    console.log("show toast:", showToast);
+    if (showToast) {
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    }
+  }, [showToast]);
+
   const handleChangeForm = (e) => {
-    setLoginData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setSignupData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const validateFields = () => {
@@ -43,12 +59,32 @@ const Signup = () => {
     return true;
   };
 
-  const handleRegisterUser = () => {
+  const handleRegisterUser = async () => {
     const validationResult = validateFields();
     if (!validationResult) {
       console.log("error in fields");
-    }else{
-      //apply endpoint for signup
+    } else {
+      try {
+        const response = await axios.post(`${backendURL}/user/signup`, {
+          first_name: signupData.fname,
+          last_name: signupData.lname,
+          username: signupData.username,
+          email: signupData.email,
+          password: signupData.password,
+        });
+        console.log("response:", response.data);
+        if (response.status === 200) {
+          setToastMessage("User created successfully");
+          setShowToast(true);
+          setTimeout(() => {
+            navigate("/");
+          }, 3000);
+        }
+      } catch (error) {
+        console.log("error:", error);
+        setToastMessage("Some error occurred while creating user :(");
+        setShowToast(true);
+      }
     }
   };
 
@@ -142,7 +178,7 @@ const Signup = () => {
             Register
           </button>
           <p className="terms-text">
-            By clicking Register or registering through a third party you accept the Zync's
+            By clicking Register or registering through a third party you accept the Zync&apos;s
             <a> Terms of Use and acknowledge the Privacy Statement and Cookie Policy.</a>{" "}
           </p>
           <p className="terms-text text-center">Register with:</p>
@@ -165,6 +201,7 @@ const Signup = () => {
           </p>
         </div>
       </div>
+      <Toast showToast={showToast} toastMessage={toastMessage} />
     </div>
   );
 };

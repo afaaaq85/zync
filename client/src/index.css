@@ -72,9 +72,11 @@
   height: 100vh;
   background-color: #ffffff;
   color: #575757;
-  border-right: 1px solid rgb(186, 186, 186);
+  border-right: 1px solid rgb(228, 228, 228);
   margin: 10px 0px;
   transition: transform 0.3s ease;
+  border-top-right-radius: 10px ;
+  border-bottom-right-radius: 10px ;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -129,11 +131,17 @@
 .sidebar ul {
   list-style-type: none;
   padding: 0;
+  margin-top: 15px;
+  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .sidebar ul li {
-  margin: 10px 0;
   text-align: center;
+  width: 50%;
 }
 
 .sidebar ul li a {
@@ -142,12 +150,11 @@
   display: block;
   padding: 8px 20px;
   border-radius: 6px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.5s ease;
 }
 
 .sidebar ul li a:hover {
-  background-color: #48b6ff;
-  color: white;
+  background-color: #e5e5e5;
 }
 
 .chat-container {
@@ -395,4 +402,20 @@
 .error-text{
   color: red;
   font-size: 12px;
+}
+
+.popup-toast{
+  display: none;
+  border-radius: 8px;
+  background-color: white;
+  padding: 5px 10px;
+  border: 1px solid lightgray;
+  position: fixed;
+  z-index: 999;
+  top: 2%;
+  right: 2%;
+  font-size: 13px;
+}
+.popup-toast.show{
+  display: block;
 }

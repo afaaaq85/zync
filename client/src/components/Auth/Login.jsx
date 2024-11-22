@@ -4,13 +4,16 @@ import zyncBlue from "../../assets/imgs/zync-blue.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import Toast from "../Toast/Toast";
+
 
 const Login = () => {
   const [togglePassword, setTogglePassword] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const backendURL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
-
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
   const { setUserToken } = useAuth();
 
 
@@ -25,10 +28,20 @@ const Login = () => {
       setUserToken(response.data.token);
       localStorage.setItem("userToken", response.data.token);
       if (response.status === 200) {
-        navigate("/home");
+        setToastMessage("Login successful");
+        setShowToast(true);
+        setTimeout(() => {
+          setShowToast(false);
+          navigate("/home");
+        }, 2000);
       }
     } catch (error) {
       console.log("error:", error.response.data.error);
+      setToastMessage(error.response.data.error);
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
     }
   };
 
@@ -88,7 +101,7 @@ const Login = () => {
             By signing in you accept the
             <a> Terms of Use and acknowledge the Privacy Statement and Cookie Policy.</a>{" "}
           </p>
-          <p className="terms-text text-center">
+          <p className="terms-text text-center" onClick={() => navigate("/signup")}>
             Don't have an account yet? <a>Register now</a>
           </p>
           <div className="text-between-lines">
@@ -112,6 +125,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <Toast showToast={showToast} toastMessage={toastMessage} />
     </div>
   );
 };
