@@ -36,7 +36,7 @@ async function getGroqResponse(messages, model, temperatureValue) {
     messages: [
       {
         role: 'system',
-        content: 'you are a helpful AI assistant. Always answer using html tags.',
+        content: 'you are a helpful AI assistant.',
       },
       ...messages,
     ],
