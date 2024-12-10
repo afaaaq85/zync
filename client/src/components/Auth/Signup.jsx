@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import zyncBlue from "../../assets/imgs/zync-blue.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Toast from "../Toast/Toast";
+
 
 const Signup = () => {
   const navigate = useNavigate();
