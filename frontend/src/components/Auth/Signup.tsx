@@ -21,7 +21,6 @@ const Signup = () => {
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [variant, setVariant] = useState("info");
-
   const [signupData, setSignupData] = useState({
     fname: "",
     lname: "",
