@@ -16,6 +16,7 @@ const SideMenu = ({ isOpen, toggleSidebar, setIsOpen }: SideMenuProps) => {
   const location = useLocation();
   const { setUserToken, isGoogle,setIsGoogle } = useAuth();
   const cliendId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+  
   useEffect(() => {
     console.log("is google:",isGoogle)
   })
@@ -41,7 +42,6 @@ const SideMenu = ({ isOpen, toggleSidebar, setIsOpen }: SideMenuProps) => {
       <div className={`brand-top ${location.pathname === "/" ? "d-none" : "d-flex"}`}>
        <div className="toggle-button flex flex-col gap-1" onClick={toggleSidebar}>
         <div className="line1"></div>
-        <div className="line2"></div>
        </div>
         <h2 className={`brand-title ${isOpen ? "d-none" : " ms-3"}`}>zync</h2>
       </div>
@@ -73,9 +73,7 @@ const SideMenu = ({ isOpen, toggleSidebar, setIsOpen }: SideMenuProps) => {
             ) : (
               <Link onClick={handleLogout} to={"/"} className="text-decoration-none text-danger">
                 <p>Logout</p>
-               
               </Link>
-              
             )}
           </ul>
         </div>

@@ -456,7 +456,7 @@ pre {
   transform: translate(-50%, -50%);
 }
 
-.line1,.line2{
+.line1{
   width: 30px;
   height: 2px;
   background-color: #000;

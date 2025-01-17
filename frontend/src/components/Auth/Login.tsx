@@ -158,7 +158,7 @@ const Login = () => {
                 <img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" />
                 <p className="m-0">Google</p>
               </button> */}
-              <div>
+              <div className="w-100 flex items-center justify-center">
                 <GoogleLogin
                   clientId={cliendId}
                   buttonText="Login with Google"
