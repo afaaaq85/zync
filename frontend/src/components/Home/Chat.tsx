@@ -163,7 +163,7 @@ function Chat({ isOpen }:{isOpen:boolean}) {
             >
               <MenuItem value={"llama3-8b-8192"}>llama3-8b-8192</MenuItem>
               <MenuItem value={"llama3-70b-8192"}>llama3-70b-8192</MenuItem>
-              <MenuItem value={"gemma-7b-it"}>gemma-7b-it</MenuItem>
+              <MenuItem value={"gemma2-9b-it"}>gemma2-9b-it</MenuItem>
               <MenuItem value={"mixtral-8x7b-32768"}>
                 mixtral-8x7b-32768
               </MenuItem>
