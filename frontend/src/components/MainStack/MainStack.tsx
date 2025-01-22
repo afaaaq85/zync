@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Chat from "../Home/Chat";
-import SideMenu from "../SideMenu/SideManu";
+import SideMenu from "../SideMenu/SideMenu";
 import Login from "../Auth/Login";
 import Signup from "../Auth/Signup";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";

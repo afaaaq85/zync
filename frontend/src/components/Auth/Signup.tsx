@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Toast from "../Toast/Toast";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/anim/botLoading.json";
+import { GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline } from "react-google-login";
 
 type newErrors = {
   fname?: string;
@@ -29,13 +30,12 @@ const Signup = () => {
     password: "",
   });
   const [errors, setErrors] = useState<newErrors>({});
+  const backendURL = import.meta.env.VITE_API_URL;
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   useEffect(() => {
-    console.log("show toast:", showToast);
     if (showToast) {
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
+      setTimeout(() => setShowToast(false), 3000);
     }
   }, [showToast]);
 
@@ -44,62 +44,95 @@ const Signup = () => {
   };
 
   const validateFields = () => {
-    const newerrors: newErrors = {};
-    if (!signupData.fname) {
-      newerrors.fname = "First name is required*";
-    }
-    if (!signupData.username) {
-      newerrors.username = "Username is required*";
-    }
-    if (!signupData.email) {
-      newerrors.email = "Email is required*";
-    } else if (!/\S+@\S+\.\S+/.test(signupData.email)) {
-      newerrors.email = "Email is invalid!";
-    }
-    if (!signupData.password.trim()) {
-      newerrors.password = "Password is required*";
-    } else if (signupData.password.trim().length < 8) {
-      newerrors.password = "Password must be at least 8 characters!";
-    }
-    setErrors(newerrors);
-    const errorLength = Object.keys(newerrors);
-    if (errorLength.length > 0) {
-      return false;
-    }
-    return true;
+    const newErrors: newErrors = {};
+    if (!signupData.fname) newErrors.fname = "First name is required*";
+    if (!signupData.username) newErrors.username = "Username is required*";
+    if (!signupData.email) newErrors.email = "Email is required*";
+    else if (!/\S+@\S+\.\S+/.test(signupData.email)) newErrors.email = "Email is invalid!";
+    if (!signupData.password.trim()) newErrors.password = "Password is required*";
+    else if (signupData.password.trim().length < 8)
+      newErrors.password = "Password must be at least 8 characters!";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleRegisterUser = async () => {
-    const validationResult = validateFields();
-    if (!validationResult) {
-      console.log("error in fields");
-    } else {
-      setIsLoading(true);
+    if (!validateFields()) return;
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${backendURL}/user/signup`, {
+        first_name: signupData.fname,
+        last_name: signupData.lname,
+        username: signupData.username,
+        email: signupData.email,
+        password: signupData.password,
+      });
+      console.log("response after google signup", response);
+      setToastMessage("Signup successful");
+      setVariant("success");
+      setIsLoading(false);
+      navigate("/login");
+    } catch (error: unknown) {
+      console.error("some big errorrr in google signup", error);
+      if (error instanceof AxiosError) {
+        setVariant("error");
+        setToastMessage("Signup failed, please try again!");
+      }
+      setIsLoading(false);
+    }
+  };
+
+  // const generateGoogleJWTToken = async (googleId: string) => {
+  //   try {
+  //     const response = await axios.post(`${backendURL}/user/googleSignup`, { googleId });
+  //     setToastMessage("Signup successful with Google");
+  //     setVariant("success");
+  //     localStorage.setItem("userToken", response.data.token);
+  //     navigate("/home");
+  //   } catch (error) {
+  //     console.error("Error during Google signup:", error);
+  //     setToastMessage("Google signup failed, please try again!");
+  //     setVariant("error");
+  //   }
+  // };
+
+  const onSuccess = async (res: GoogleLoginResponse | GoogleLoginResponseOffline) => {
+    if ("profileObj" in res) {
+      const firstName = res?.profileObj?.givenName;
+      const lastName = res?.profileObj?.familyName;
+      const email = res?.profileObj?.email;
       try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/signup`, {
-          first_name: signupData.fname,
-          last_name: signupData.lname,
-          username: signupData.username,
-          email: signupData.email,
-          password: signupData.password,
+        const response = await axios.post(`${backendURL}/user/signup`, {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          username: `user_${Math.random().toString(36).substring(7)}`,
+          password: `password_${Math.random().toString(36).substring(7)}`,
         });
-        console.log("response:", response);
-        setIsLoading(false);
+        console.log("response after G signup", response);
         setToastMessage("Signup successful");
         setVariant("success");
+        setIsLoading(false);
         navigate("/login");
-      } catch (error: unknown) {
+      } catch (error) {
+        setShowToast(true);
+        setVariant("error");
         if (error instanceof AxiosError) {
-          setIsLoading(false);
-          setVariant("error");
-          setToastMessage("Signup failed, plesae try again!");
-          console.error("error:", error.response);
+          if (error.status === 409) {
+            setToastMessage("Account already exitsts, please login!");
+          }
+          setToastMessage("Signup failed, please try again!");
         }
-        else{
-          console.log("unknown error",error);
-        }
+        setIsLoading(false);
+        console.log("error while google signup:", error);
       }
     }
+  };
+
+  const onFailure = (res: unknown) => {
+    console.error("Google signup failed:", res);
+    setToastMessage("Google signup failed, please try again!");
+    setVariant("error");
   };
 
   return (
@@ -212,18 +245,17 @@ const Signup = () => {
             </p>
             <p className="terms-text text-center">Register with:</p>
             <div className="login-btns d-flex flex-column gap-2 mt-2">
-              <button className="w-100 d-flex align-items-center justify-content-center gap-2">
-                <img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" />
-                <p className="m-0">Google</p>
-              </button>
-              {/* <button className="w-100 d-flex align-items-center justify-content-center gap-2">
-              <img src="https://img.icons8.com/?size=100&id=62856&format=png&color=000000" />
-              <p className="m-0">GitHub</p>
-            </button>
-            <button className="w-100 d-flex align-items-center justify-content-center gap-2">
-              <img src="https://img.icons8.com/?size=100&id=13930&format=png&color=000000" />
-              <p className="m-0">LinkedIn</p>
-            </button> */}
+              <div className="w-100 flex items-center justify-center">
+                <GoogleLogin
+                  clientId={clientId}
+                  buttonText="Signup with Google"
+                  onSuccess={onSuccess}
+                  onFailure={onFailure}
+                  cookiePolicy={"single_host_origin"}
+                  isSignedIn={false}
+                  type="icon"
+                />
+              </div>
             </div>
             <p className="terms-text text-center mt-2">
               Already have an account?<a onClick={() => navigate("/")}> Sign in</a>

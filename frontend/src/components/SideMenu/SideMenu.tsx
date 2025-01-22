@@ -39,7 +39,7 @@ const SideMenu = ({ isOpen, toggleSidebar, setIsOpen }: SideMenuProps) => {
 
   return (
     <>
-      <div className={`brand-top ${location.pathname === "/" ? "d-none" : "d-flex"}`}>
+      <div className={`brand-top ${location.pathname === "/" || location.pathname==="/signup" ? "d-none" : "d-flex"}`}>
        <div className="toggle-button flex flex-col gap-1" onClick={toggleSidebar}>
         <div className="line1"></div>
        </div>

@@ -18,7 +18,7 @@ const Login = () => {
   const { setUserToken, setIsGoogle } = useAuth();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [variant, setVariant] = useState("info");
-  const cliendId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   const handleChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -57,11 +57,26 @@ const Login = () => {
     }
   };
 
+  const generateGoogleJWTToken = async (email: string) => {
+    console.log("google id:", email);
+    try {
+      const response = await axios.post(`${backendURL}/user/googleLogin`, {
+        email,
+      });
+      console.log("response after google jwt",response)
+      setUserToken(response.data.token);
+      localStorage.setItem("userToken", response.data.token);
+    } catch (error) {
+      console.error("some error while google jwt",error)
+    }
+  };
+
   const onSuccess = (res: GoogleLoginResponse | GoogleLoginResponseOffline) => {
     console.log("Login success", res);
     setToastMessage("Login successful");
     setVariant("success");
     if ("accessToken" in res && res.accessToken) {
+      generateGoogleJWTToken(res?.profileObj?.email);
       localStorage.setItem("userToken", res.accessToken);
       setUserToken(res.accessToken);
     }
@@ -160,7 +175,7 @@ const Login = () => {
               </button> */}
               <div className="w-100 flex items-center justify-center">
                 <GoogleLogin
-                  clientId={cliendId}
+                  clientId={clientId}
                   buttonText="Login with Google"
                   onSuccess={onSuccess}
                   onFailure={onFailure}

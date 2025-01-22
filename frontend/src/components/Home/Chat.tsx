@@ -51,7 +51,6 @@ function Chat({ isOpen }:{isOpen:boolean}) {
         { role: "assistant", content: response.data.response },
       ]);
 
-      console.log(response.data.response);
       setLoading(false);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -63,7 +62,7 @@ function Chat({ isOpen }:{isOpen:boolean}) {
     setUserMessage("");
 
     try {
-      const response = await axios.patch(
+      await axios.patch(
         `${backendURL}/api/clear`,
         {},
         {
@@ -73,7 +72,6 @@ function Chat({ isOpen }:{isOpen:boolean}) {
         }
       );
       setMessages([]);
-      console.log(response.data.response);
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages([]);
